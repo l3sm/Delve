@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 enum BlockType { EMPTY, ROCK, UNKNOWN };
 enum Entity { PLAYER };
@@ -30,9 +28,31 @@ void spawnPlayer(int columns, int rows, struct Player *player) {
   player->position.y = rows / 2;
 }
 
+void playerMove(int *exit, struct Player *player) {
+  char move = getchar();
+  switch (move) {
+  case 'w':
+    player->position.y--;
+    break;
+  case 's':
+    player->position.y++;
+    break;
+  case 'd':
+    player->position.x++;
+    break;
+  case 'a':
+    player->position.x--;
+    break;
+  case 'q':
+    *exit = 0;
+    break;
+  };
+}
+
 int main() {
   int columns;
   int rows;
+  int exit = 1;
 
   getMapSize(&columns, &rows);
   printf("\nMap size set at %dx%d\n", columns, rows);
@@ -42,31 +62,50 @@ int main() {
   enum BlockType map[rows][columns];
 
   spawnPlayer(columns, rows, &player);
+
   printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
+
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
       map[i][j] = ROCK;
     }
   }
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < columns; j++) {
-      if (player.position.x == j && player.position.y == i) {
-        printf("\033[97m@\033[0m");
-      } else {
-        switch (map[i][j]) {
-        case ROCK:
-          printf("\033[90mR\033[0m");
-          break;
-        case EMPTY:
-          printf(" ");
-          break;
-        default:
-          printf("\033[31m?\033[0m");
-          break;
+  int oob;
+  do {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < columns; j++) {
+        if (player.position.x == j && player.position.y == i) {
+          printf("\033[97m@\033[0m");
+        } else {
+          switch (map[i][j]) {
+          case ROCK:
+            printf("\033[90mR\033[0m");
+            break;
+          case EMPTY:
+            printf(" ");
+            break;
+          default:
+            printf("\033[31m?\033[0m");
+            break;
+          }
         }
       }
+      printf("\n");
     }
-    printf("\n");
-  }
+    int tempx = player.position.x;
+    int tempy = player.position.y;
+    oob = -1;
+    do {
+      oob++;
+      if (oob > 0) {
+        player.position.x = tempx;
+        player.position.y = tempy;
+      }
+      playerMove(&exit, &player);
+    } while (player.position.x >= columns || player.position.y >= rows ||
+             player.position.x < 0 || player.position.y < 0);
+
+  } while (exit);
+
   return 0;
 }
