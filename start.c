@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 
 enum BlockType { EMPTY, ROCK, UNKNOWN };
 enum Entity { PLAYER };
@@ -104,7 +105,7 @@ int main() {
       playerMove(&exit, &player);
     } while (player.position.x >= columns || player.position.y >= rows ||
              player.position.x < 0 || player.position.y < 0);
-
+    printf("\e[1;1H\e[2J");
   } while (exit);
 
   return 0;
