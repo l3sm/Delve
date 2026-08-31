@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum BlockType { EMPTY, ROCK, UKNOWN };
+enum BlockType { EMPTY, ROCK, UNKNOWN };
+enum Entity { PLAYER };
 
 // The starting position should be at the center of the map. The center of the
 // map will be found by halfing the rows and halfing the columns. So we have
@@ -10,9 +11,9 @@ enum BlockType { EMPTY, ROCK, UKNOWN };
 // player spawn in that specific position. A struct answers: “What information
 // belongs to this one thing?”
 // An enum answers: “Which one option from this fixed list is true?”
-void getMapSize(int rows, int columns) {
-  rows = 20;
-  columns = 50;
+void getMapSize(int *columns, int *rows) {
+  *columns = 50;
+  *rows = 20;
 }
 
 struct Position {
@@ -24,10 +25,9 @@ struct Player {
   struct Position position;
 };
 
-void spawnPlayer(int rows, int columns) {
-  struct Player player;
-  player.position.x = rows / 2 - rows % 2;
-  player.position.y = columns / 2 - rows % 2;
+void spawnPlayer(int columns, int rows, struct Player *player) {
+  player->position.x = columns / 2;
+  player->position.y = rows / 2;
 }
 
 int main() {
@@ -37,32 +37,39 @@ int main() {
   // strdup method that does the exact same. It also copies the contents of
   // rockbuffer to the place in memory pointed by rock. So now rock points to
   // the gray R.
-  int rows;
   int columns;
+  int rows;
 
-  getMapSize(rows, columns);
+  getMapSize(&columns, &rows);
+  printf("\nMap size set at %dx%d\n", columns, rows);
+
+  struct Player player;
+
   enum BlockType map[rows][columns];
 
-  spawnPlayer(rows, columns);
-
+  spawnPlayer(columns, rows, &player);
+  printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
       map[i][j] = ROCK;
     }
   }
-
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
-      switch (map[i][j]) {
-      case ROCK:
-        printf("%s", rock);
-        break;
-      case EMPTY:
-        printf(" ");
-        break;
-      default:
-        printf("\033[31m?\033[0m");
-        break;
+      if (player.position.x == j && player.position.y == i) {
+        printf("\033[97m@\033[0m");
+      } else {
+        switch (map[i][j]) {
+        case ROCK:
+          printf("%s", rock);
+          break;
+        case EMPTY:
+          printf(" ");
+          break;
+        default:
+          printf("\033[31m?\033[0m");
+          break;
+        }
       }
     }
     printf("\n");
