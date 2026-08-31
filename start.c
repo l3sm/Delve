@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <unistd.h>
 
 enum BlockType { EMPTY, ROCK, UNKNOWN };
 enum Entity { PLAYER };
