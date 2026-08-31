@@ -31,12 +31,6 @@ void spawnPlayer(int columns, int rows, struct Player *player) {
 }
 
 int main() {
-  char rockBuffer[100] = "\033[90mR\033[0m";
-  char *rock = strdup(rockBuffer);
-  // So instead of using malloc to strlen of rockbuffer+1 I opted for this
-  // strdup method that does the exact same. It also copies the contents of
-  // rockbuffer to the place in memory pointed by rock. So now rock points to
-  // the gray R.
   int columns;
   int rows;
 
@@ -61,7 +55,7 @@ int main() {
       } else {
         switch (map[i][j]) {
         case ROCK:
-          printf("%s", rock);
+          printf("\033[90mR\033[0m");
           break;
         case EMPTY:
           printf(" ");
@@ -74,9 +68,5 @@ int main() {
     }
     printf("\n");
   }
-
-  free(rock);
-  rock = NULL;
-
   return 0;
 }
