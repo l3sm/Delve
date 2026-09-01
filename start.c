@@ -72,7 +72,8 @@ int main() {
   }
   int oob;
   do {
-    printf("pos: x:%d, y:%d\n", player.position.x, player.position.y);
+    printf("\e[1;1H\e[2J pos: x:%d, y:%d\n", player.position.x,
+           player.position.y);
     for (int i = rows - 1; i >= 0; i--) {
       for (int j = 0; j < columns; j++) {
         if (player.position.x == j && player.position.y == i) {
@@ -106,7 +107,6 @@ int main() {
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0));
-    printf("\e[1;1H\e[2J");
   } while (exit);
 
   return 0;
