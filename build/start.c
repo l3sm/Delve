@@ -97,6 +97,11 @@ int main() {
       }
       printf("\n");
     }
+    fflush(stdout); // Forces any output waiting in the buffer to be sent to the
+                    // terminal immidietely, instead of waiting in memory until
+                    // the buffer
+    // fills up or until the program decides to sent it on its own.
+
     int tempx = player.position.x;
     int tempy = player.position.y;
     oob = -1;
@@ -111,6 +116,5 @@ int main() {
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0));
   } while (exit);
-
   return 0;
 }
