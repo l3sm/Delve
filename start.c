@@ -32,10 +32,10 @@ void playerMove(int *exit, struct Player *player) {
   char move = getchar();
   switch (move) {
   case 'w':
-    player->position.y--;
+    player->position.y++;
     break;
   case 's':
-    player->position.y++;
+    player->position.y--;
     break;
   case 'd':
     player->position.x++;
@@ -65,14 +65,15 @@ int main() {
 
   printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
 
-  for (int i = 0; i < rows; i++) {
+  for (int i = rows - 1; i >= 0; i--) {
     for (int j = 0; j < columns; j++) {
       map[i][j] = ROCK;
     }
   }
   int oob;
   do {
-    for (int i = 0; i < rows; i++) {
+    printf("pos: x:%d, y:%d\n", player.position.x, player.position.y);
+    for (int i = rows - 1; i >= 0; i--) {
       for (int j = 0; j < columns; j++) {
         if (player.position.x == j && player.position.y == i) {
           printf("\033[97m@\033[0m");
@@ -102,8 +103,9 @@ int main() {
         player.position.y = tempy;
       }
       playerMove(&exit, &player);
-    } while (player.position.x >= columns || player.position.y >= rows ||
-             player.position.x < 0 || player.position.y < 0);
+    } while (exit &&
+             (player.position.x >= columns || player.position.y >= rows ||
+              player.position.x < 0 || player.position.y < 0));
     printf("\e[1;1H\e[2J");
   } while (exit);
 
