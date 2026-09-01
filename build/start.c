@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+// Phase 1
 enum BlockType { EMPTY, ROCK, UNKNOWN };
 enum Entity { PLAYER };
 
