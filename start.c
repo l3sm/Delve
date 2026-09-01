@@ -1,4 +1,53 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
+
+// Borrowed snippet to prevent having to press Enter each time:
+//----------------------------------------------------------------------------------
+//  Holds a copy of the terminal settings from before the game starts.
+//  We need this so we can put the terminal back to normal when the game exits.
+struct termios originalTerminal;
+
+// This function restores the terminal settings we saved earlier.
+// atexit() will automatically call this when main ends normally.
+void restoreTerminal(void) {
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTerminal);
+}
+
+// Configure the terminal so getchar() receives a single key immediately,
+// instead of waiting for the user to press Enter.
+void enableImmediateInput(void) {
+  // This will become our changed copy of the original terminal settings.
+  struct termios gameTerminal;
+
+  // Read and save the terminal's current settings.
+  tcgetattr(STDIN_FILENO, &originalTerminal);
+
+  // On a normal exit, automatically restore the saved terminal settings.
+  atexit(restoreTerminal);
+
+  // Start from the normal terminal settings rather than inventing all settings.
+  gameTerminal = originalTerminal;
+
+  // Turn off:
+  // ICANON = canonical/line mode, which waits for Enter.
+  // ECHO   = terminal automatically printing each pressed key.
+  gameTerminal.c_lflag &= ~(ICANON | ECHO);
+
+  // Wait until at least one character is available before getchar() continues.
+  gameTerminal.c_cc[VMIN] = 1;
+
+  // Do not use a timeout while waiting for input.
+  gameTerminal.c_cc[VTIME] = 0;
+
+  // Apply our game-specific terminal settings.
+  // TCSAFLUSH also discards any input that was typed before this setting
+  // applied.
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &gameTerminal);
+}
+//------------------------------------------------------------------------------------------
+// End of borrowed snpippet
 
 enum BlockType { EMPTY, ROCK, UNKNOWN };
 enum Entity { PLAYER };
@@ -29,7 +78,7 @@ void spawnPlayer(int columns, int rows, struct Player *player) {
 }
 
 void playerMove(int *exit, struct Player *player) {
-  char move = getchar();
+  int move = getchar();
   switch (move) {
   case 'w':
     player->position.y++;
@@ -53,7 +102,7 @@ int main() {
   int columns;
   int rows;
   int exit = 1;
-
+  enableImmediateInput();
   getMapSize(&columns, &rows);
   printf("\nMap size set at %dx%d\n", columns, rows);
 
