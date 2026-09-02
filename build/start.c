@@ -1,10 +1,11 @@
 #include "terminal.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 
 // Phase 1
-enum BlockType { EMPTY, ROCK, UNKNOWN };
+enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
 enum Entity { PLAYER };
 
 // The starting position should be at the center of the map. The center of the
@@ -22,10 +23,26 @@ struct Position {
   int x;
   int y;
 };
+
+struct Direction {
+  bool north;
+  bool south;
+  bool west;
+  bool east;
+};
+
 struct Player {
   int speed;
   struct Position position;
+  struct Direction facingDirection;
 };
+
+void setDirectionTo0(struct Player *player) {
+  player->facingDirection.north = 0;
+  player->facingDirection.south = 0;
+  player->facingDirection.west = 0;
+  player->facingDirection.east = 0;
+}
 
 void spawnPlayer(int columns, int rows, struct Player *player) {
   player->position.x = columns / 2;
@@ -33,24 +50,43 @@ void spawnPlayer(int columns, int rows, struct Player *player) {
 }
 
 void playerMove(int *exit, struct Player *player) {
+  setDirectionTo0(player);
   int move = getchar();
+
   switch (move) {
   case 'w':
     player->position.y++;
+    player->facingDirection.north = 1;
     break;
   case 's':
     player->position.y--;
+    player->facingDirection.south = 1;
     break;
   case 'd':
     player->position.x++;
+    player->facingDirection.west = 1;
     break;
   case 'a':
     player->position.x--;
+    player->facingDirection.east = 1;
     break;
   case 'q':
     *exit = 0;
     break;
   };
+}
+
+void printDirection(struct Player *player) {
+  printf("Facing: ");
+  if (player->facingDirection.north) {
+    printf("North");
+  } else if (player->facingDirection.south) {
+    printf("South");
+  } else if (player->facingDirection.west) {
+    printf("West");
+  } else if (player->facingDirection.east) {
+    printf("east");
+  }
 }
 
 int main() {
@@ -67,7 +103,7 @@ int main() {
 
   spawnPlayer(columns, rows, &player);
 
-  printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
+  //  printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
 
   for (int i = rows - 1; i >= 0; i--) {
     for (int j = 0; j < columns; j++) {
@@ -76,8 +112,10 @@ int main() {
   }
   int oob;
   do {
-    printf("\e[1;1H\e[2J pos: x:%d, y:%d\n", player.position.x,
+    printf("\e[1;1H\e[2Jpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
+    printDirection(&player);
+    printf("\n");
     for (int i = rows - 1; i >= 0; i--) {
       for (int j = 0; j < columns; j++) {
         if (player.position.x == j && player.position.y == i) {
