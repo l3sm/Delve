@@ -23,52 +23,38 @@ struct Position {
   int x;
   int y;
 };
-
-struct Direction {
-  bool north;
-  bool south;
-  bool west;
-  bool east;
-};
+enum Direction { NORTH, SOUTH, WEST, EAST };
 
 struct Player {
   int speed;
   struct Position position;
-  struct Direction facingDirection;
+  enum Direction facingDirection;
 };
-
-void setDirectionTo0(struct Player *player) {
-  player->facingDirection.north = 0;
-  player->facingDirection.south = 0;
-  player->facingDirection.west = 0;
-  player->facingDirection.east = 0;
-}
 
 void spawnPlayer(int columns, int rows, struct Player *player) {
   player->position.x = columns / 2;
   player->position.y = rows / 2;
+  player->facingDirection = NORTH;
 }
 
 void playerMove(int *exit, struct Player *player) {
-  setDirectionTo0(player);
   int move = getchar();
-
   switch (move) {
   case 'w':
     player->position.y++;
-    player->facingDirection.north = 1;
+    player->facingDirection = NORTH;
     break;
   case 's':
     player->position.y--;
-    player->facingDirection.south = 1;
+    player->facingDirection = SOUTH;
     break;
   case 'd':
     player->position.x++;
-    player->facingDirection.west = 1;
+    player->facingDirection = EAST;
     break;
   case 'a':
     player->position.x--;
-    player->facingDirection.east = 1;
+    player->facingDirection = WEST;
     break;
   case 'q':
     *exit = 0;
@@ -77,15 +63,19 @@ void playerMove(int *exit, struct Player *player) {
 }
 
 void printDirection(struct Player *player) {
-  printf("Facing: ");
-  if (player->facingDirection.north) {
+  switch (player->facingDirection) {
+  case NORTH:
     printf("North");
-  } else if (player->facingDirection.south) {
+    break;
+  case SOUTH:
     printf("South");
-  } else if (player->facingDirection.west) {
+    break;
+  case WEST:
     printf("West");
-  } else if (player->facingDirection.east) {
-    printf("east");
+    break;
+  case EAST:
+    printf("East");
+    break;
   }
 }
 
