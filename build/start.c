@@ -1,3 +1,5 @@
+// gcc -Wall -Wextra -fsanitize=address start.c terminal.c -o start
+
 #include "terminal.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -7,7 +9,6 @@
 // Phase 1
 enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
 enum Entity { PLAYER };
-
 // The starting position should be at the center of the map. The center of the
 // map will be found by halfing the rows and halfing the columns. So we have
 // 20/2=10, 50/2=25 so the center of the map right now is [10],[25] To make the
@@ -15,8 +16,8 @@ enum Entity { PLAYER };
 // belongs to this one thing?”
 // An enum answers: “Which one option from this fixed list is true?”
 void getMapSize(int *columns, int *rows) {
-  *columns = 50;
-  *rows = 20;
+  *columns = 100;
+  *rows = 40;
 }
 
 struct Position {
@@ -62,7 +63,8 @@ void playerMove(int *exit, struct Player *player) {
   };
 }
 
-void printDirection(struct Player *player) {
+void printDirection(struct Player *player, enum BlockType facingBlock) {
+  printf("Facing Direction: ");
   switch (player->facingDirection) {
   case NORTH:
     printf("North");
@@ -76,6 +78,52 @@ void printDirection(struct Player *player) {
   case EAST:
     printf("East");
     break;
+  }
+  printf("   ");
+  printf("Facing Block: ");
+  switch (facingBlock) {
+  case UNKNOWN:
+    printf("Unknown");
+    break;
+  case ROCK:
+    printf("Rock");
+    break;
+  case IRON_ORE:
+    printf("Iron Ore");
+    break;
+  case GOLD:
+    printf("Gold");
+    break;
+  case EMPTY:
+    printf("Nothing");
+    break;
+  }
+}
+
+enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
+                                  enum BlockType map[rows][columns]) {
+  int targetX = player->position.x;
+  int targetY = player->position.y;
+
+  switch (player->facingDirection) {
+  case NORTH:
+    targetY++;
+    break;
+  case SOUTH:
+    targetY--;
+    break;
+  case WEST:
+    targetX--;
+    break;
+  case EAST:
+    targetX++;
+    break;
+  }
+
+  if (targetX >= columns || targetY >= rows || targetX < 0 || targetY < 0) {
+    return UNKNOWN;
+  } else {
+    return map[targetY][targetX];
   }
 }
 
@@ -101,10 +149,12 @@ int main() {
     }
   }
   int oob;
+  enum BlockType facingBlock = UNKNOWN;
   do {
     printf("\e[1;1H\e[2Jpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
-    printDirection(&player);
+    printDirection(&player, facingBlock);
+
     printf("\n");
     for (int i = rows - 1; i >= 0; i--) {
       for (int j = 0; j < columns; j++) {
@@ -144,6 +194,8 @@ int main() {
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0));
+    facingBlock = GetFacingBlockType(&player, rows, columns, map);
+
   } while (exit);
   return 0;
 }
