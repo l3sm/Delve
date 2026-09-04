@@ -133,8 +133,6 @@ int main() {
   int exit = 1;
   enableImmediateInput();
   getMapSize(&columns, &rows);
-  printf("\nMap size set at %dx%d\n", columns, rows);
-
   struct Player player;
 
   enum BlockType map[rows][columns];
@@ -151,7 +149,8 @@ int main() {
   int oob;
   enum BlockType facingBlock = UNKNOWN;
   do {
-    printf("\e[1;1H\e[2Jpos: x:%d, y:%d      ", player.position.x,
+    facingBlock = GetFacingBlockType(&player, rows, columns, map);
+    printf("\e[1;1Hpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
     printDirection(&player, facingBlock);
 
@@ -194,7 +193,6 @@ int main() {
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0));
-    facingBlock = GetFacingBlockType(&player, rows, columns, map);
 
   } while (exit);
   return 0;
