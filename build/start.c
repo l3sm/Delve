@@ -200,7 +200,8 @@ int main() {
       playerMove(&exit, &player);
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
-              player.position.x < 0 || player.position.y < 0));
+              player.position.x < 0 || player.position.y < 0 ||
+              map[player.position.y][player.position.x] != EMPTY));
 
   } while (exit);
   return 0;
