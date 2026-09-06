@@ -144,7 +144,13 @@ int main() {
 
   for (int i = rows - 1; i >= 0; i--) {
     for (int j = 0; j < columns; j++) {
-      map[i][j] = ROCK;
+      if (i > rows * 3 / 4 || i < rows * 1 / 4) {
+        map[i][j] = ROCK;
+      } else if (j < columns * 1 / 4 || j > columns * 3 / 4) {
+        map[i][j] = ROCK;
+      } else {
+        map[i][j] = EMPTY;
+      }
     }
   }
   int oob;
