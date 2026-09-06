@@ -196,6 +196,7 @@ int main() {
       if (oob > 0) {
         player.position.x = tempx;
         player.position.y = tempy;
+        break;
       }
       playerMove(&exit, &player);
     } while (exit &&
