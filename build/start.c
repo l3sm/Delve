@@ -9,6 +9,35 @@
 
 enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
 enum Entity { PLAYER };
+struct BlockProperties {
+  int hardness;
+  int breakingPower;
+  bool walkable;
+  char symbol;
+};
+struct BlockProperties blockProperties[] = {
+    [EMPTY] = {.hardness = 0,
+               .breakingPower = 0,
+               .walkable = true,
+               .symbol = ' '},
+
+    [ROCK] = {.hardness = 4,
+              .breakingPower = 0,
+              .walkable = false,
+              .symbol = 'R'},
+
+    [UNKNOWN] = {.hardness = 0,
+                 .breakingPower = 0,
+                 .walkable = false,
+                 .symbol = '?'},
+
+    [IRON_ORE] = {.hardness = 10,
+                  .breakingPower = 1,
+                  .walkable = false,
+                  .symbol = 'I'},
+
+    [GOLD] = {
+        .hardness = 2, .breakingPower = 2, .walkable = false, .symbol = 'G'}};
 // The starting position should be at the center of the map. The center of the
 // map will be found by halfing the rows and halfing the columns. So we have
 // 20/2=10, 50/2=25 so the center of the map right now is [10],[25] To make the
@@ -19,12 +48,6 @@ void getMapSize(int *columns, int *rows) {
   *columns = 100;
   *rows = 40;
 }
-
-struct MiningProgress {
-  int x;
-  int y;
-  int progress;
-};
 
 void printDirection(struct Player *player, enum BlockType facingBlock) {
   printf("Facing Direction: ");
@@ -123,7 +146,6 @@ int main() {
     printf("\e[1;1H\e[Kpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
     printDirection(&player, facingBlock);
-
     printf("\e[K\n");
     for (int i = rows - 1; i >= 0; i--) {
       printf("\e[K");
