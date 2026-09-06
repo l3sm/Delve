@@ -1,12 +1,12 @@
 // gcc -Wall -Wextra -fsanitize=address start.c terminal.c -o start
 
+#include "player.h"
 #include "terminal.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 
-// Phase 1
 enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
 enum Entity { PLAYER };
 // The starting position should be at the center of the map. The center of the
@@ -20,48 +20,11 @@ void getMapSize(int *columns, int *rows) {
   *rows = 40;
 }
 
-struct Position {
+struct MiningProgress {
   int x;
   int y;
+  int progress;
 };
-enum Direction { NORTH, SOUTH, WEST, EAST };
-
-struct Player {
-  int speed;
-  struct Position position;
-  enum Direction facingDirection;
-};
-
-void spawnPlayer(int columns, int rows, struct Player *player) {
-  player->position.x = columns / 2;
-  player->position.y = rows / 2;
-  player->facingDirection = NORTH;
-}
-
-void playerMove(int *exit, struct Player *player) {
-  int move = getchar();
-  switch (move) {
-  case 'w':
-    player->position.y++;
-    player->facingDirection = NORTH;
-    break;
-  case 's':
-    player->position.y--;
-    player->facingDirection = SOUTH;
-    break;
-  case 'd':
-    player->position.x++;
-    player->facingDirection = EAST;
-    break;
-  case 'a':
-    player->position.x--;
-    player->facingDirection = WEST;
-    break;
-  case 'q':
-    *exit = 0;
-    break;
-  };
-}
 
 void printDirection(struct Player *player, enum BlockType facingBlock) {
   printf("Facing Direction: ");
