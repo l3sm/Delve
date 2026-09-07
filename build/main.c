@@ -1,4 +1,3 @@
-#include "player.h"
 #include "terminal.h"
 #include "world.h"
 #include <stdbool.h>
@@ -118,7 +117,7 @@ int main() {
         player.position.y = tempy;
         break;
       }
-      playerInput(&exit, &player, &facingBlockInfo);
+      playerInput(&exit, &player, facingBlockInfo);
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0 ||
