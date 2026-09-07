@@ -5,8 +5,7 @@ void mineBlock(struct Block *facingBlockInfo) {
   int hardness = blockProperties[blockToMine].hardness;
   if (blockToMine != UNKNOWN && blockToMine != EMPTY) {
     facingBlockInfo->miningProgress++;
-    if (facingBlockInfo->miningProgress >=
-        blockProperties[blockToMine].hardness) {
+    if (facingBlockInfo->miningProgress >= hardness) {
       facingBlockInfo->type = EMPTY;
       facingBlockInfo->miningProgress = 0;
     }
