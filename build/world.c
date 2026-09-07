@@ -27,7 +27,7 @@ const struct BlockProperties blockProperties[] = {
         .hardness = 2, .breakingPower = 2, .walkable = false, .symbol = 'G'}};
 
 void getMapSize(int *columns, int *rows) {
-  *columns = 100;
+  *columns = 80;
   *rows = 40;
 }
 struct Block *GetFacingBlockType(struct Player *player, int rows, int columns,

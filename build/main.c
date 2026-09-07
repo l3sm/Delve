@@ -6,7 +6,7 @@
 #include <unistd.h>
 /*
 gcc -std=c11 -Wall -Wextra -fsanitize=address main.c player.c terminal.c world.c
--o start
+mine.c -o start
 */
 void printDirection(struct Player *player, enum BlockType facingBlock) {
   printf("Facing Direction: ");
