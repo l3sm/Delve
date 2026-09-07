@@ -2,4 +2,6 @@
 #define MINE_H
 #include "world.h"
 
-struct Block
+void mineBlock(struct Block *facingBlockInfo,
+               struct BlockProperties *blockProperties[]);
+#endif

@@ -1,21 +1,12 @@
 #include "player.h"
 #include "world.h"
-#include <stdio.h>
-#include <string.h>
-struct MiningProgress {
-  int x;
-  int y;
-  int progress;
-};
-void mine(enum BlockType *facingBlock,
-          struct BlockProperties blockProperties[]) {
-  int *facingBlockHardness = blockProperties[facingBlock].hardness;
-  int move;
-
-  do {
-    move = getchar();
-    if (move == 'm') {
-      *facingBlockHardness--;
-    }
-  } while (facingBlockHardness > 0);
+void mineBlock(struct Block *facingBlockInfo,
+               struct BlockProperties *blockProperties[]) {
+  enum BlockType blockToMine = facingBlockInfo->type;
+  int hardness = blockProperties[blockToMine]->hardness;
+  if (blockToMine != UNKNOWN || blockToMine != EMPTY) {
+    do {
+      facingBlockInfo->miningProgress++;
+    } while (facingBlockInfo->miningProgress < hardness);
+  }
 }

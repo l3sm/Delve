@@ -1,4 +1,6 @@
 #include "player.h"
+#include "mine.h"
+#include "world.h"
 #include <stdio.h>
 void spawnPlayer(int columns, int rows, struct Player *player) {
   player->position.x = columns / 2;
@@ -30,6 +32,6 @@ void playerInput(int *exit, struct Player *player,
     *exit = 0;
     break;
   case 'm':
-    mineBlock()
+    mineBlock(facingBlockInfo, blockProperties);
   };
 }

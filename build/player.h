@@ -1,10 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "world.h"
 struct Position {
   int x;
   int y;
 };
+struct Block;
 enum Direction { NORTH, SOUTH, WEST, EAST };
 
 struct Player {
