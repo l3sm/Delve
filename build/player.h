@@ -12,5 +12,6 @@ struct Player {
   enum Direction facingDirection;
 };
 void spawnPlayer(int columns, int rows, struct Player *player);
-void playerMove(int *exit, struct Player *player);
+void playerMove(int *exit, struct Player *player,
+                struct BlockType *facingBlockPtr);
 #endif

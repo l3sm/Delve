@@ -8,6 +8,11 @@
 #include <unistd.h>
 
 enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
+
+struct Block {
+  enum BlockType type;
+  int miningProgress;
+};
 enum Entity { PLAYER };
 struct BlockProperties {
   int hardness;
@@ -15,7 +20,8 @@ struct BlockProperties {
   bool walkable;
   char symbol;
 };
-struct BlockProperties blockProperties[] = {
+
+const struct BlockProperties blockProperties[] = {
     [EMPTY] = {.hardness = 0,
                .breakingPower = 0,
                .walkable = true,
@@ -86,8 +92,8 @@ void printDirection(struct Player *player, enum BlockType facingBlock) {
   }
 }
 
-enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
-                                  enum BlockType map[rows][columns]) {
+enum BlockType *GetFacingBlockType(struct Player *player, int rows, int columns,
+                                   struct Block map[rows][columns]) {
   int targetX = player->position.x;
   int targetY = player->position.y;
 
@@ -105,11 +111,11 @@ enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
     targetX++;
     break;
   }
-
+  enum BlockType unknown = UNKNOWN;
   if (targetX >= columns || targetY >= rows || targetX < 0 || targetY < 0) {
-    return UNKNOWN;
+    return &unknown;
   } else {
-    return map[targetY][targetX];
+    return &map[targetY][targetX].type;
   }
 }
 
@@ -122,7 +128,7 @@ int main() {
   printf("\e[2J");
   struct Player player;
 
-  enum BlockType map[rows][columns];
+  struct Block map[rows][columns];
 
   spawnPlayer(columns, rows, &player);
 
@@ -131,18 +137,22 @@ int main() {
   for (int i = rows - 1; i >= 0; i--) {
     for (int j = 0; j < columns; j++) {
       if (i > rows * 3 / 4 || i < rows * 1 / 4) {
-        map[i][j] = ROCK;
+        map[i][j].type = ROCK;
+        map[i][j].miningProgress = 0;
       } else if (j < columns * 1 / 4 || j > columns * 3 / 4) {
-        map[i][j] = ROCK;
+        map[i][j].type = ROCK;
+        map[i][j].miningProgress = 0;
       } else {
-        map[i][j] = EMPTY;
+        map[i][j].type = EMPTY;
       }
     }
   }
   int oob;
-  enum BlockType facingBlock = UNKNOWN;
+  enum BlockType facingBlock;
+  enum BlockType *facingBlockPtr;
   do {
-    facingBlock = GetFacingBlockType(&player, rows, columns, map);
+    facingBlockPtr = GetFacingBlockType(&player, rows, columns, map);
+    facingBlock = *facingBlockPtr;
     printf("\e[1;1H\e[Kpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
     printDirection(&player, facingBlock);
@@ -153,7 +163,7 @@ int main() {
         if (player.position.x == j && player.position.y == i) {
           printf("\033[97m@\033[0m");
         } else {
-          switch (map[i][j]) {
+          switch (map[i][j].type) {
           case ROCK:
             printf("\033[90mR\033[0m");
             break;
@@ -183,11 +193,11 @@ int main() {
         player.position.y = tempy;
         break;
       }
-      playerMove(&exit, &player);
+      playerMove(&exit, &player, facingBlockPtr);
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0 ||
-              map[player.position.y][player.position.x] != EMPTY));
+              map[player.position.y][player.position.x].type != EMPTY));
 
   } while (exit);
   return 0;
