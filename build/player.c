@@ -6,7 +6,8 @@ void spawnPlayer(int columns, int rows, struct Player *player) {
   player->facingDirection = NORTH;
 }
 
-void playerMove(int *exit, struct Player *player) {
+void playerInput(int *exit, struct Player *player,
+                 struct Block *facingBlockInfo) {
   int move = getchar();
   switch (move) {
   case 'w':
@@ -28,5 +29,7 @@ void playerMove(int *exit, struct Player *player) {
   case 'q':
     *exit = 0;
     break;
+  case 'm':
+    mineBlock()
   };
 }

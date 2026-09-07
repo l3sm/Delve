@@ -1,8 +1,3 @@
-// gcc -Wall -Wextra -fsanitize=address start.c terminal.c player.c world.c -o
-// start
-//
-//
-
 #include "player.h"
 #include "terminal.h"
 #include "world.h"
@@ -10,7 +5,10 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
-
+/*
+gcc -std=c11 -Wall -Wextra -fsanitize=address main.c player.c terminal.c world.c
+-o start
+*/
 void printDirection(struct Player *player, enum BlockType facingBlock) {
   printf("Facing Direction: ");
   switch (player->facingDirection) {
@@ -47,6 +45,7 @@ void printDirection(struct Player *player, enum BlockType facingBlock) {
     break;
   }
 }
+
 int main() {
   int columns;
   int rows;
@@ -76,12 +75,12 @@ int main() {
     }
   }
   int oob;
-  enum BlockType facingBlock;
+  struct Block *facingBlockInfo;
   do {
-    facingBlock = GetFacingBlockType(&player, rows, columns, map);
+    facingBlockInfo = GetFacingBlockType(&player, rows, columns, map);
     printf("\e[1;1H\e[Kpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
-    printDirection(&player, facingBlock);
+    printDirection(&player, facingBlockInfo->type);
     printf("\e[K\n");
     for (int i = rows - 1; i >= 0; i--) {
       printf("\e[K");
@@ -119,12 +118,11 @@ int main() {
         player.position.y = tempy;
         break;
       }
-      playerMove(&exit, &player);
+      playerInput(&exit, &player, &facingBlockInfo);
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0 ||
               map[player.position.y][player.position.x].type != EMPTY));
-
   } while (exit);
   return 0;
 }

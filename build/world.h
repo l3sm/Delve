@@ -20,6 +20,6 @@ struct BlockProperties {
 extern const struct BlockProperties blockProperties[];
 void getMapSize(int *columns, int *rows);
 
-enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
-                                  struct Block map[rows][columns]);
+struct Block *GetFacingBlockType(struct Player *player, int rows, int columns,
+                                 struct Block map[rows][columns]);
 #endif

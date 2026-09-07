@@ -30,8 +30,8 @@ void getMapSize(int *columns, int *rows) {
   *columns = 100;
   *rows = 40;
 }
-enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
-                                  struct Block map[rows][columns]) {
+struct Block *GetFacingBlockType(struct Player *player, int rows, int columns,
+                                 struct Block map[rows][columns]) {
   int targetX = player->position.x;
   int targetY = player->position.y;
 
@@ -49,10 +49,11 @@ enum BlockType GetFacingBlockType(struct Player *player, int rows, int columns,
     targetX++;
     break;
   }
-  enum BlockType unknown = UNKNOWN;
+  struct Block temp;
+  temp.type = UNKNOWN;
   if (targetX >= columns || targetY >= rows || targetX < 0 || targetY < 0) {
-    return unknown;
+    return &temp;
   } else {
-    return map[targetY][targetX].type;
+    return &map[targetY][targetX];
   }
 }
