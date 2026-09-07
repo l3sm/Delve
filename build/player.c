@@ -32,6 +32,7 @@ void playerInput(int *exit, struct Player *player,
     *exit = 0;
     break;
   case 'm':
-    mineBlock(facingBlockInfo, blockProperties);
+    mineBlock(facingBlockInfo);
+    break;
   };
 }

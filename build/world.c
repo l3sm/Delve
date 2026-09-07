@@ -1,7 +1,7 @@
 #include "world.h"
 #include "player.h"
 #include <stdbool.h>
-
+static struct Block outOfBoundsBlock = {.type = UNKNOWN, .miningProgress = 0};
 const struct BlockProperties blockProperties[] = {
     [EMPTY] = {.hardness = 0,
                .breakingPower = 0,
@@ -49,10 +49,8 @@ struct Block *GetFacingBlockType(struct Player *player, int rows, int columns,
     targetX++;
     break;
   }
-  struct Block temp;
-  temp.type = UNKNOWN;
   if (targetX >= columns || targetY >= rows || targetX < 0 || targetY < 0) {
-    return &temp;
+    return &outOfBoundsBlock;
   } else {
     return &map[targetY][targetX];
   }
