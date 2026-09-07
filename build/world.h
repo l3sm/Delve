@@ -1,5 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
+#include "player.h"
 #include <stdbool.h>
 
 enum BlockType { EMPTY, ROCK, UNKNOWN, IRON_ORE, GOLD };
