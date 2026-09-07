@@ -1,5 +1,7 @@
 // gcc -Wall -Wextra -fsanitize=address start.c terminal.c player.c world.c -o
 // start
+//
+//
 
 #include "player.h"
 #include "terminal.h"
