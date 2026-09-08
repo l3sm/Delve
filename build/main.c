@@ -21,10 +21,10 @@ void printDirection(struct Player *player, enum BlockType facingBlock) {
     printf("South");
     break;
   case WEST:
-    printf("West");
+    printf("West ");
     break;
   case EAST:
-    printf("East");
+    printf("East ");
     break;
   }
   printf("   ");
@@ -107,17 +107,7 @@ int main() {
         if (player.position.x == j && player.position.y == i) {
           printf("\033[92m@\033[0m");
         } else {
-          switch (map[i][j].type) {
-          case ROCK:
-            printf("%s", blockProperties[map[i][j].type].symbol);
-            break;
-          case EMPTY:
-            printf("%s", blockProperties[map[i][j].type].symbol);
-            break;
-          default:
-            printf("%s", blockProperties[map[i][j].type].symbol);
-            break;
-          }
+          printf("%s", blockProperties[map[i][j].type].symbol);
         }
       }
       printf("\n");
