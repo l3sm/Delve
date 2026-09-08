@@ -1,15 +1,30 @@
 #include "player.h"
 #include "mine.h"
-#include "world.h"
 #include <stdio.h>
 void spawnPlayer(int columns, int rows, struct Player *player) {
   player->position.x = columns / 2;
   player->position.y = rows / 2;
   player->facingDirection = NORTH;
 }
-
+struct Inventory *addToInventory(enum BlockType block,
+                                 struct Inventory *inventory) {
+  switch (block) {
+  case ROCK:
+    inventory->rocks++;
+    break;
+  case IRON_ORE:
+    inventory->iron_ore++;
+    break;
+  case GOLD:
+    inventory->gold++;
+    break;
+  default:
+    break;
+  }
+  return inventory;
+}
 void playerInput(int *exit, struct Player *player,
-                 struct Block *facingBlockInfo) {
+                 struct Block *facingBlockInfo, struct Inventory *inventory) {
   int move = getchar();
   switch (move) {
   case 'w':
@@ -32,7 +47,7 @@ void playerInput(int *exit, struct Player *player,
     *exit = 0;
     break;
   case 'm':
-    mineBlock(facingBlockInfo);
+    addToInventory(mineBlock(facingBlockInfo), inventory);
     break;
   };
 }

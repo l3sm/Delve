@@ -1,12 +1,15 @@
+#include "block.h"
+#include "player.h"
 #include "terminal.h"
 #include "world.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+
 /*
 gcc -std=c11 -Wall -Wextra -fsanitize=address main.c player.c terminal.c world.c
-mine.c -o start
+yyyyyyyyo start
 */
 void printDirection(struct Player *player, enum BlockType facingBlock) {
   printf("Facing Direction: ");
@@ -44,8 +47,35 @@ void printDirection(struct Player *player, enum BlockType facingBlock) {
     break;
   }
 }
-
+void initializeMap(int rows, int columns, struct Block map[rows][columns]) {
+  for (int i = rows - 1; i >= 0; i--) {
+    for (int j = 0; j < columns; j++) {
+      if (i > rows * 3 / 4 || i < rows * 1 / 4) {
+        if (i % 3 == 0) {
+          map[i][j].type = IRON_ORE;
+        } else {
+          map[i][j].type = ROCK;
+        }
+      } else if (j < columns * 1 / 4 || j > columns * 3 / 4) {
+        if (j % 5 == 0) {
+          map[i][j].type = GOLD;
+        } else {
+          map[i][j].type = ROCK;
+        }
+      } else {
+        map[i][j].type = EMPTY;
+      }
+      map[i][j].miningProgress = 0;
+    }
+  }
+}
+void printInventory(struct Inventory inventory) {
+  printf("\n\033[90mRocks\033[0m = %d  \033[97mIron\033[0m = %d  "
+         "\033[93mGold\033[0m = %d",
+         inventory.rocks, inventory.iron_ore, inventory.gold);
+}
 int main() {
+
   int columns;
   int rows;
   int exit = 1;
@@ -59,43 +89,33 @@ int main() {
   spawnPlayer(columns, rows, &player);
 
   //  printf("Player spawned at %dx%d\n", player.position.x, player.position.y);
+  initializeMap(rows, columns, map);
 
-  for (int i = rows - 1; i >= 0; i--) {
-    for (int j = 0; j < columns; j++) {
-      if (i > rows * 3 / 4 || i < rows * 1 / 4) {
-        map[i][j].type = ROCK;
-        map[i][j].miningProgress = 0;
-      } else if (j < columns * 1 / 4 || j > columns * 3 / 4) {
-        map[i][j].type = ROCK;
-        map[i][j].miningProgress = 0;
-      } else {
-        map[i][j].type = EMPTY;
-      }
-    }
-  }
   int oob;
   struct Block *facingBlockInfo;
+
   do {
-    facingBlockInfo = GetFacingBlockType(&player, rows, columns, map);
+    facingBlockInfo = getFacingBlockType(&player, rows, columns, map);
     printf("\e[1;1H\e[Kpos: x:%d, y:%d      ", player.position.x,
            player.position.y);
     printDirection(&player, facingBlockInfo->type);
+    printInventory(player.inventory);
     printf("\e[K\n");
     for (int i = rows - 1; i >= 0; i--) {
       printf("\e[K");
       for (int j = 0; j < columns; j++) {
         if (player.position.x == j && player.position.y == i) {
-          printf("\033[97m@\033[0m");
+          printf("\033[92m@\033[0m");
         } else {
           switch (map[i][j].type) {
           case ROCK:
-            printf("\033[90mR\033[0m");
+            printf("%s", blockProperties[map[i][j].type].symbol);
             break;
           case EMPTY:
-            printf(" ");
+            printf("%s", blockProperties[map[i][j].type].symbol);
             break;
           default:
-            printf("\033[31m?\033[0m");
+            printf("%s", blockProperties[map[i][j].type].symbol);
             break;
           }
         }
@@ -117,7 +137,7 @@ int main() {
         player.position.y = tempy;
         break;
       }
-      playerInput(&exit, &player, facingBlockInfo);
+      playerInput(&exit, &player, facingBlockInfo, &player.inventory);
     } while (exit &&
              (player.position.x >= columns || player.position.y >= rows ||
               player.position.x < 0 || player.position.y < 0 ||

@@ -2,5 +2,5 @@
 #define MINE_H
 #include "world.h"
 
-void mineBlock(struct Block *facingBlockInfo);
+enum BlockType mineBlock(struct Block *facingBlockInfo);
 #endif
